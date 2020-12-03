@@ -18,11 +18,12 @@ bool ReprojectionErrorSE3XYZ<7>::Evaluate(const double * const *parameters, doub
     J_cam << f_by_z, 0, - f_by_zz * p[0],
             0, f_by_z, - f_by_zz * p[1];
 
-
+    // * (daoran): problem.AddResidualBlock(costFunc, NULL, states.pose(j), states.point(i));
     if(jacobians != NULL)
     {
         if(jacobians[0] != NULL)
         {
+            // ! (daoran): J_se3(jacobians[0]) 
             Eigen::Map<Eigen::Matrix<double, 2, 7, Eigen::RowMajor> > J_se3(jacobians[0]);
             J_se3.setZero();
             J_se3.block<2,3>(0,0) = - J_cam * skew(p);
@@ -30,6 +31,7 @@ bool ReprojectionErrorSE3XYZ<7>::Evaluate(const double * const *parameters, doub
         }
         if(jacobians[1] != NULL)
         {
+            // ! (daoran): J_point(jacobians[1])
             Eigen::Map<Eigen::Matrix<double, 2, 3, Eigen::RowMajor> > J_point(jacobians[1]);
             J_point = J_cam * quaterd.toRotationMatrix();
         }
@@ -85,6 +87,8 @@ bool PoseSE3Parameterization<7>::Plus(const double *x, const double *delta, doub
     Eigen::Map<Eigen::Quaterniond> quaterd_plus(x_plus_delta);
     Eigen::Map<Eigen::Vector3d> trans_plus(x_plus_delta + 4);
 
+    // ? (daoran): Why left multiply
+    // * (daoran): jacobians got from left multiply small perturbations
     quaterd_plus = se3_delta.rotation() * quaterd;
     trans_plus = se3_delta.rotation() * trans + se3_delta.translation();
 

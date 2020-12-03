@@ -100,12 +100,14 @@ BAProblem<PoseBlockSize>::BAProblem(int pose_num_, int point_num_, double pix_no
         if (num_obs >= 2)
         {
             problem.AddParameterBlock(states.point(i), 3);
+            // ? (ordering)
             if(useOrdering)
                 ordering->AddElementToGroup(states.point(i), 0);
 
             for (int j = 0; j < pose_num; ++j)
             {
                 true_states.getPose(j, true_pose_se3.rotation(), true_pose_se3.translation());
+                // ! (daoran): true_pose_se3 is T_CW 
                 Vector3d point_cam = true_pose_se3.map(true_point_i);
                 z = cam.cam_map(point_cam);
 
@@ -121,7 +123,7 @@ BAProblem<PoseBlockSize>::BAProblem(int pose_num_, int point_num_, double pix_no
 
         }
     }
-
+    // ? (ordering)
     if(useOrdering)
         for (int i = 0; i < pose_num; ++i)
         {

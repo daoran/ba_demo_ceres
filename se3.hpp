@@ -95,6 +95,7 @@ inline Eigen::Quaterniond toQuaterniond(const Eigen::Vector3d& v3d, double* angl
     }
     else
     {
+        // ? (daoran): why sin_half_theta/theta?
         double sin_half_theta = sin(half_theta);
         imag_factor = sin_half_theta/theta;
     }
